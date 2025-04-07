@@ -3,11 +3,24 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * This is basically a JPanel component to display the Graph
+ * and allows me to drag the vertices around interactively.
+ * Later this will also include a menu for different graph traversals.
+ */
 class GraphPanel extends JPanel {
     private Graph graph;
     private Vertex dragged = null;
     private int offsetX, offsetY;
 
+
+    /**
+     * The main logic that constructs the panel
+     *
+     * @param n      The number of vertices
+     * @param width  The width where we can place vertices
+     * @param height The height where we can place vertices
+     */
     public GraphPanel(int n, int width, int height) {
 
         graph = new Graph(n, width, height - 28); // subtract the constant amount of height taken by the top bar
@@ -26,6 +39,9 @@ class GraphPanel extends JPanel {
                 }
             }
 
+            /**
+             * These listeners handle all of the events that we might care about.
+             */
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (dragged != null) {
@@ -45,6 +61,10 @@ class GraphPanel extends JPanel {
         addMouseMotionListener(mouse);
     }
 
+
+    /**
+     * Overrides paintComponent() so we can draw the graph's vertices.
+     * */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

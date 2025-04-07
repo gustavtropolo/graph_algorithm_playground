@@ -2,6 +2,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
+
+
+/**
+ * Holds a collection of vertices and can perform operations
+ * with them that we will define later like various
+ * different graph traversals.
+ */
 public class Graph {
 
     private final int radius = 20;
@@ -9,7 +16,14 @@ public class Graph {
     ArrayList<Vertex> vertices = new ArrayList<>();
     static final Random rand = new Random();
 
-
+    /**
+     * Constructs a Graph with a specified number of randomly placed vertices
+     * within the width and height.
+     *
+     * @param num_vertices The number of vertices (circles) to create.
+     * @param width        The maximum width for placing vertices.
+     * @param height       The maximum height for placing vertices.
+     */
     public Graph(int num_vertices, int width, int height) {
         int i = 0;
         while (i < num_vertices) {
@@ -24,6 +38,13 @@ public class Graph {
         }
     }
 
+    /**
+     * Checks if the given vertex collides with any of the others that
+     * exist in the graph.
+     *
+     * @param circle The Vertex to check for collisions.
+     * @return returns true if the given Vertex collides
+     */
     public boolean hasCollision(Vertex circle) {
         int x1 = circle.x;
         int y1 = circle.y;

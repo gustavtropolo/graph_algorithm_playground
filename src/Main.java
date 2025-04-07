@@ -1,5 +1,10 @@
 import javax.swing.*;
 
+/**
+ * This is where we enter the program and initialize
+ * the frame and the graph panel with the height and
+ * width that we want. (And the right amount of balls)
+ */
 public class Main {
     public static void main(String[] args) {
         JFrame frame = new JFrame("Draggable Circles");
