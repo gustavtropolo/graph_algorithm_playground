@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 
@@ -13,6 +15,7 @@ public class Graph {
 
     ArrayList<Vertex> vertices = new ArrayList<>();
     static final Random rand = new Random();
+    HashMap<Vertex, HashMap<Vertex, Integer>> edges = new HashMap<>(); // map each vertex to its set of neighbors which is mapped to the weight of the edge
 
     /**
      * Constructs a Graph with a specified number of randomly placed vertices
@@ -34,6 +37,28 @@ public class Graph {
             }
             vertices.add(v);
             i++;
+        }
+    }
+
+    /**
+     * Adds edges to the graph
+     *
+     * @param maxDist The max distance that we allow edges to travel.
+     */
+    public void addEdges(int maxDist) {
+        int weight;
+        for (int i = 0; i < vertices.size(); i++) {
+            Vertex v1 = vertices.get(i);
+            for (int j = i + 1; j < vertices.size(); j++) {
+                Vertex v2 = vertices.get(j);
+                weight = rand.nextInt(10) + 1;
+                if (edges.containsKey(v2) && !edges.get(v2).containsKey(v1)) { // if the edge doesn't exist in the other direction add it
+                    if (!edges.containsKey(v1)) {
+                        edges.put(v1, new HashMap<>()); // create the set if it doesn't exist
+                    }
+                    edges.get(v1).put(v2, weight); // add the edge with its weight
+                }
+            }
         }
     }
 

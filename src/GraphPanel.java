@@ -63,7 +63,7 @@ class GraphPanel extends JPanel {
 
 
     /**
-     * Overrides paintComponent() so we can draw the graph's vertices.
+     * Overrides paintComponent() so we can draw the graph's vertices and edges.
      * */
     @Override
     protected void paintComponent(Graphics g) {
