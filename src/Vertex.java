@@ -6,14 +6,15 @@ import java.util.HashSet;
  * in the graph and stores all of its properties.
  */
 public class Vertex {
-    int x, y, radius;
+    int x, y;
     HashSet<Vertex> neighbors = new HashSet<>(); // the set of all neighboring vertices
     Color color;
+    static final int radius = 5;
 
-    public Vertex(int x, int y, int radius, Color color) {
+
+    public Vertex(int x, int y, Color color) {
         this.x = x;
         this.y = y;
-        this.radius = radius;
         this.color = color;
     }
 

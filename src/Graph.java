@@ -11,8 +11,6 @@ import java.util.Random;
  */
 public class Graph {
 
-    private final int radius = 20;
-
     ArrayList<Vertex> vertices = new ArrayList<>();
     static final Random rand = new Random();
 
@@ -26,10 +24,11 @@ public class Graph {
      */
     public Graph(int num_vertices, int width, int height) {
         int i = 0;
+        int radius = Vertex.radius;
         while (i < num_vertices) {
             int xPos = rand.nextInt(width - 2 * radius) + radius;
             int yPos = rand.nextInt(height - 2 * radius) + radius;
-            Vertex v = new Vertex(xPos, yPos, radius, Color.GRAY);
+            Vertex v = new Vertex(xPos, yPos, Color.GRAY);
             if (hasCollision(v)) {
                 continue;
             }

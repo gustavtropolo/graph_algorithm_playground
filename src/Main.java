@@ -11,7 +11,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         int width = 1000;
         int height = 800;
-        int num_balls = 100;
+        int num_balls = 2000;
         frame.setSize(width, height);
         frame.add(new GraphPanel(num_balls, width, height));
         frame.setVisible(true);
