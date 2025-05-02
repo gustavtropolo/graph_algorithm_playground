@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -7,14 +8,15 @@ import java.util.HashSet;
  */
 public class Vertex {
     int x, y;
-    HashSet<Vertex> neighbors = new HashSet<>(); // the set of all neighboring vertices
+    HashMap<Vertex, Integer> neighbors = new HashMap<>(); // the set of all neighboring vertices and edge weights
     Color color;
-    static final int radius = 5;
+    final int radius;
 
 
-    public Vertex(int x, int y, Color color) {
+    public Vertex(int x, int y, int ball_radius, Color color) {
         this.x = x;
         this.y = y;
+        this.radius = ball_radius;
         this.color = color;
     }
 
@@ -31,4 +33,5 @@ public class Vertex {
         int dy = my - y;
         return dx * dx + dy * dy <= radius * radius; // distance from the middle of the circle must be <= r^2
     }
+
 }
