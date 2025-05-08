@@ -8,16 +8,22 @@ import java.util.HashSet;
  */
 public class Vertex {
     int x, y;
-    HashMap<Vertex, Integer> neighbors = new HashMap<>(); // the set of all neighboring vertices and edge weights
+    HashMap<Vertex, Double> neighbors = new HashMap<>(); // the set of all neighboring vertices and edge weights
     Color color;
     final int radius;
+    final int index;
 
 
-    public Vertex(int x, int y, int ball_radius, Color color) {
+    public Vertex(int x, int y, int ball_radius, Color color, int index) {
         this.x = x;
         this.y = y;
         this.radius = ball_radius;
         this.color = color;
+        this.index = index;
+    }
+
+    public void updateColor(Color c) {
+        this.color = c;
     }
 
     /**

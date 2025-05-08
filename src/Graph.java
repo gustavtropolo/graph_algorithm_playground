@@ -1,6 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -14,7 +14,12 @@ import java.util.Random;
 public class Graph {
 
     ArrayList<Vertex> vertices = new ArrayList<>();
+    ArrayList<Pair<Vertex, Vertex>> extraEdges = new ArrayList<>();
     static final Random rand = new Random();
+    int width;
+    int height;
+    int maxDist;
+    int density = 0;
 
     /**
      * Constructs a Graph with a specified number of randomly placed vertices
@@ -25,19 +30,26 @@ public class Graph {
      * @param height       The maximum height for placing vertices.
      */
     public Graph(int num_vertices, int ball_radius, int width, int height, int maxDist) {
+        this.width = width;
+        this.height = height;
+        this.maxDist = maxDist;
         addVertices(num_vertices, ball_radius, width, height);
-        int minDist = 2 * ball_radius + 5;
-        int density = 100;
-        addEdges(maxDist, density);
+        addEdges();
     }
 
     private void addVertices(int num_vertices, int ball_radius, int width, int height) {
         int i = 0;
+        int maxAttempts = 1000000;
+        int attempts = 0;
         while (i < num_vertices) {
             int xPos = rand.nextInt(width - 2 * ball_radius) + ball_radius;
             int yPos = rand.nextInt(height - 2 * ball_radius) + ball_radius;
-            Vertex v = new Vertex(xPos, yPos, ball_radius, Color.GRAY);
+            Vertex v = new Vertex(xPos, yPos, ball_radius, Color.GRAY, i);
+            if (attempts > maxAttempts) { // no more than a million failed attempts
+                break;
+            }
             if (hasCollision(v, 15)) {
+                attempts++;
                 continue;
             }
             vertices.add(v);
@@ -45,56 +57,76 @@ public class Graph {
         }
     }
 
+    public void setDensity(int newDensity) {
+        updateEdgeDensity(this.density, newDensity);
+        this.density = newDensity;
+    }
+
     /**
      * Adds edges to the graph
-     *
-     * @param maxDist The max distance that we allow edges to travel.
      */
-    public void addEdges(int maxDist, int density) {
-        int weight, dx, dy;
+    public void addEdges() {
         int origMaxDist = maxDist;
         WeightedQuickUnion wqu = new WeightedQuickUnion(vertices.size());
-        int i = 0;
-        while (i < vertices.size()) {
-            Vertex startVertex = vertices.get(i);
-            int i_initial = i;
-            for (int j = 0; j < vertices.size(); j++) {
-                if (i == j) continue;
-                Vertex endVertex = vertices.get(j);
-                dx = startVertex.x - endVertex.x;
-                dy = startVertex.y - endVertex.y;
-                if (dx * dx + dy * dy > maxDist * maxDist) {
-                    continue; // skip the vertex pairs that exceed the max distance
-                }
-                if (wqu.connected(i, j) && maxDist < 300) { // once we get past 150 bypass
-                    continue;
-                }
-                weight = rand.nextInt(10) + 1;
-                startVertex.neighbors.put(endVertex, weight);
-                wqu.union(i, j); // union these two since they now belong to the same set
-                i++; // move on to the next vertex we need to connect
-                maxDist = origMaxDist; // restore the max distance
+        HashSet<Integer> unvisitedVertexIndices = new HashSet<>();
+        for (int i = 0; i < vertices.size(); i++) {
+            unvisitedVertexIndices.add(i);
+        }
+        for (Integer i: unvisitedVertexIndices) {
+            boolean result = connectToOtherGroup(i, maxDist, wqu); // attempt to connect vertex i to another vertex
+            if (result) { //success
+                continue;
+            }
+            // we haven't found a neighbor outside of the group that's close enough
+            ArrayList<Integer> vertexIndices = findNearbyVerticesByIndex(i, wqu);
+            if (vertexIndices.size() == vertices.size()) { // everything is connected
                 break;
             }
-            if (i == i_initial) {
+            boolean not_connected = true;
+            while (not_connected) {
+                assert(!vertexIndices.isEmpty()); // can't be empty
+                for (Integer j : vertexIndices) {
+                    if (connectToOtherGroup(j, maxDist, wqu)) { //try to connect all the neighbors to another group
+                        i++;
+                        not_connected = false;
+                        break; // success
+                    }
+                }
                 maxDist += 10;
             }
+            maxDist = origMaxDist; //restore maxDist
         }
-        // everything is connected now, add more edges to make more dense
+
+        updateEdgeDensity(0, density);
+    }
+
+    public void updateEdgeDensity(int old_density, int new_density) {
+        int densityChange = new_density - old_density;
+        if (densityChange > 0) {
+            increaseDensity(densityChange);
+        } else {
+            decreaseDensity(densityChange * -1);
+        }
+    }
+
+    public void increaseDensity(int densityChange) {
         int count = 0;
-        while (count < density) {
-            i = count % vertices.size();
+        int i, dx, dy;
+        int originalMaxdist = maxDist;
+        while (count < densityChange) {
+            i = rand.nextInt(vertices.size());
+            int originalCount = count;
             Vertex startVertex = vertices.get(i);
             for (int j = 0; j < vertices.size(); j++) {
                 if (i == j) continue;
-                if (startVertex.neighbors.size() > 4) {
+                if (startVertex.neighbors.size() > 5) {
                     break;
                 }
                 Vertex endVertex = vertices.get(j);
                 if (startVertex.neighbors.containsKey(endVertex) || endVertex.neighbors.containsKey(startVertex)) {
                     continue;
                 }
-                if (endVertex.neighbors.size() > 4) {
+                if (endVertex.neighbors.size() > 5) {
                     continue;
                 }
                 dx = startVertex.x - endVertex.x;
@@ -102,12 +134,73 @@ public class Graph {
                 if (dx * dx + dy * dy > maxDist * maxDist) {
                     continue; // skip the vertex pairs that exceed the max distance
                 }
-                weight = rand.nextInt(10) + 1;
+                double weight = dist(startVertex, endVertex);
                 startVertex.neighbors.put(endVertex, weight);
-                maxDist = origMaxDist; // restore the max distance
+                endVertex.neighbors.put(startVertex, weight);
+                extraEdges.add(new Pair<>(startVertex, endVertex));
+                count++;
             }
-            count++;
+            if (count == originalCount) { //we haven't successfully added any edges, increase search range
+                maxDist += 50;
+            }
         }
+        maxDist = originalMaxdist; // restore what it was before adding edges
+    }
+
+    public void decreaseDensity(int densityChange) {
+        for (int i = 0; i < densityChange; i++) {
+            Pair<Vertex, Vertex> pair = extraEdges.remove(0);
+            Vertex startVertex = pair.getFirst();
+            Vertex endVertex = pair.getSecond();
+            startVertex.neighbors.remove(endVertex);
+            endVertex.neighbors.remove(startVertex);
+        }
+    }
+
+    public ArrayList<Integer> findNearbyVerticesByIndex(int vertexIndex, WeightedQuickUnion wqu) {
+        // make sure every vertex is connected
+        ArrayList<Integer> nearbyVertices = new ArrayList<>();
+        nearbyVertices.add(vertexIndex);
+        for (int i = 0; i < vertices.size(); i++) {
+            if (wqu.connected(vertexIndex, i) && vertexIndex != i) {
+                nearbyVertices.add(i);
+            }
+        }
+        Collections.shuffle(nearbyVertices);
+        return nearbyVertices;
+    }
+
+    public boolean connectToOtherGroup(int startIndex, int maxDist, WeightedQuickUnion wqu) {
+        Vertex startVertex = vertices.get(startIndex);
+        for (int k = 0; k < vertices.size(); k++) {
+            int j = rand.nextInt(vertices.size());
+            if (startIndex == j) continue;
+            Vertex endVertex = vertices.get(j);
+            int dx = startVertex.x - endVertex.x;
+            int dy = startVertex.y - endVertex.y;
+            if (dx * dx + dy * dy > maxDist * maxDist) {
+                continue; // skip the vertex pairs that exceed the max distance
+            }
+            if (wqu.connected(startIndex, j)) { // skip if already connected
+                continue;
+            }
+            double weight = dist(startVertex, endVertex);
+            startVertex.neighbors.put(endVertex, weight);
+            endVertex.neighbors.put(startVertex, weight);
+            wqu.union(startIndex, j); // union these two since they now belong to the same set
+            return true;
+        }
+        return false;
+    }
+
+    public double dist(Vertex startVertex, Vertex endVertex) {
+        int dx = startVertex.x - endVertex.x;
+        int dy = startVertex.y - endVertex.y;
+
+        double distance = Math.sqrt(dx * dx + dy * dy);
+        distance = Math.round(distance * 10);
+        distance = distance / 10.0; // conv back to double
+        return distance;
     }
 
     /**
