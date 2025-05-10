@@ -9,10 +9,10 @@ import java.awt.*;
 public class Main {
     public static void main(String[] args) {
         JFrame frame = new JFrame("Draggable Circles");
-        frame.setLayout(new BorderLayout()); // Use BorderLayout
+        frame.setLayout(new BorderLayout());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        int width = 1500;
-        int height = 1100;
+        int width = 1000;
+        int height = 800;
         int num_balls = 50; //90
         int ball_radius = 25; //25
         int max_edge_dist = 10; //100

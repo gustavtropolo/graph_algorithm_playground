@@ -94,11 +94,11 @@ public class BidirectionalAstarWorker extends DfsWorker{
                 if (backward_visited.contains(neighborIndex)) {
                     continue; // skip visited nodes
                 }
-                double weight = graphPanel.graph.vertices.get(curr_backward).neighbors.get(neigh); //get the dist to neighbor
+                double weight = graphPanel.graph.vertices.get(curr_backward).neighbors.get(neigh); // get the dist to neighbor
                 if (backwardDistTo[curr_backward] + weight < backwardDistTo[neighborIndex]) { // found shorter path
                     backwardDistTo[neighborIndex] = backwardDistTo[curr_backward] + weight;
                     backward_path.put(neigh, currVertex_backward); // update path back
-                    backward_pq.add(neighborIndex); //reprocess it in the pq
+                    backward_pq.add(neighborIndex); // reprocess it in the pq
                 }
             }
         }
@@ -109,13 +109,11 @@ public class BidirectionalAstarWorker extends DfsWorker{
     }
 
     /**
-     * This method runs on a background thread.
-     * Perform the long-running DFS task here.
-     * Cannot interact directly with Swing components here.
+     * Runs on background thread.
      */
     @Override
     protected Boolean doInBackground() throws Exception { // handles InterruptedException from sleep
-        publish(new VertexUpdate(startVertex, Color.GREEN)); //this is where the thread goes to execute the dfs
+        publish(new VertexUpdate(startVertex, Color.GREEN)); // this is where the thread goes to execute the dfs
         publish(new VertexUpdate(endVertex, Color.RED));
         Thread.sleep(100);
 

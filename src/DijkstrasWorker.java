@@ -61,9 +61,7 @@ public class DijkstrasWorker extends DfsWorker{
     }
 
     /**
-     * This method runs on a background thread.
-     * Perform the long-running DFS task here.
-     * Cannot interact directly with Swing components here.
+     * Runs on background thread.
      */
     @Override
     protected Boolean doInBackground() throws Exception { // handles InterruptedException from sleep

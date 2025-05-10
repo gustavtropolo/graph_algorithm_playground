@@ -2,7 +2,7 @@ public class WeightedQuickUnion {
 
     int[] array;
 
-    /* Creates a UnionFind data structure holding N items. Initially, all
+    /** Creates a UnionFind data structure holding N items. Initially, all
        items are in disjoint sets. */
     public WeightedQuickUnion(int N) {
         array = new int[N];
@@ -11,7 +11,7 @@ public class WeightedQuickUnion {
         }
     }
 
-    /* Returns the size of the set V belongs to. */
+    /** Returns the size of the set V belongs to. */
     public int sizeOf(int v) {
         if (parent(v) < 0) {
             return -1 * array[v];
@@ -19,18 +19,18 @@ public class WeightedQuickUnion {
         return sizeOf(parent(v));
     }
 
-    /* Returns the parent of V. If V is the root of a tree, returns the
+    /** Returns the parent of V. If V is the root of a tree, returns the
        negative size of the tree for which V is the root. */
     public int parent(int v) {
         return array[v]; //the element itself is where it goes / or its the negative size
     }
 
-    /* Returns true if nodes V1 and V2 are connected. */
+    /** Returns true if nodes V1 and V2 are connected. */
     public boolean connected(int v1, int v2) {
         return find(v1) == find(v2); //if they have the same root
     }
 
-    /* Returns the root of the set V belongs to. Path-compression is employed
+    /** Returns the root of the set V belongs to. Path-compression is employed
        allowing for fast search-time. If invalid items are passed into this
        function, throw an IllegalArgumentException. */
     public int find(int v) {
@@ -52,7 +52,7 @@ public class WeightedQuickUnion {
         return findRoot(parent(v));
     }
 
-    /* Connects two items V1 and V2 together by connecting their respective
+    /** Connects two items V1 and V2 together by connecting their respective
        sets. V1 and V2 can be any element, and a union-by-size heuristic is
        used. If the sizes of the sets are equal, tie break by connecting V1's
        root to V2's root. Union-ing a item with itself or items that are

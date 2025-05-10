@@ -8,7 +8,7 @@ class DfsWorker extends SwingWorker<Boolean, DfsWorker.VertexUpdate> {
 
     public final Vertex startVertex;
     public final Vertex endVertex;
-    public final Set<Vertex> visited; // To track visited nodes
+    public final Set<Vertex> visited;
     public GraphPanel graphPanel;
 
     /**
@@ -34,7 +34,7 @@ class DfsWorker extends SwingWorker<Boolean, DfsWorker.VertexUpdate> {
             return;
         }
 
-        for (VertexUpdate update : updates) { //go through every VertexUpdate and get the vertex from it and update its color
+        for (VertexUpdate update : updates) { // go through every VertexUpdate and get the vertex from it and update its color
             update.vertex.updateColor(update.color);
         }
 
@@ -53,13 +53,11 @@ class DfsWorker extends SwingWorker<Boolean, DfsWorker.VertexUpdate> {
     }
 
     /**
-     * This method runs on a background thread.
-     * Perform the long-running DFS task here.
-     * Cannot interact directly with Swing components here.
+     * Runs on background thread.
      */
     @Override
     protected Boolean doInBackground() throws Exception { // handles InterruptedException from sleep
-        publish(new VertexUpdate(startVertex, Color.GREEN)); //this is where the thread goes to execute the dfs
+        publish(new VertexUpdate(startVertex, Color.GREEN)); // this is where the thread goes to execute the dfs
         publish(new VertexUpdate(endVertex, Color.RED));
         Thread.sleep(100);
 
@@ -67,9 +65,9 @@ class DfsWorker extends SwingWorker<Boolean, DfsWorker.VertexUpdate> {
     }
 
     /**
-     * Recursive DFS helper method, runs on the background thread.
+     * Runs on background thread.
      * @param currentVertex The vertex currently being explored.
-     * @return true if the endVertex was found from this path, false otherwise.
+     * @return true if the endVertex found.
      */
     private boolean dfsHelper(Vertex currentVertex) throws InterruptedException {
         if (isCancelled()) {
@@ -78,15 +76,15 @@ class DfsWorker extends SwingWorker<Boolean, DfsWorker.VertexUpdate> {
 
         visited.add(currentVertex);
 
-        //the publish method sends updates to the EDT
+        // the publish method sends updates to the EDT
         if (currentVertex != startVertex && currentVertex != endVertex) {
-            publish(new VertexUpdate(currentVertex, Color.ORANGE)); //other visited nodes in yellow
+            publish(new VertexUpdate(currentVertex, Color.ORANGE)); // other visited nodes in yellow
         }
-        Thread.sleep(graphPanel.animationDelay); //  pause immediately after doing the color change
+        Thread.sleep(graphPanel.animationDelay); // pause immediately after doing the color change
 
         if (currentVertex == endVertex) {
             publish(new VertexUpdate(currentVertex, Color.CYAN));
-            return true; //we found a path
+            return true; // we found a path
         }
 
         for (Vertex neighbor : currentVertex.neighbors.keySet()) {

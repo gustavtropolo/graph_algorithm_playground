@@ -17,18 +17,15 @@ public class ControlPanel extends JPanel {
     private AstarWorker currentAstarWorker = null;
     private BidirectionalAstarWorker currentBidirectionalAstarWorker = null;
 
-
-
     public ControlPanel(GraphPanel graphPanel) {
 
         AtomicReference<Graph> graph = new AtomicReference<>(graphPanel.graph); // get the graph
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        setBackground(Color.LIGHT_GRAY); // Set a background color (optional)
 
         add(new JLabel("Traversal Algorithms"));
-        add(Box.createRigidArea(new Dimension(0, 5))); // Spacing
+        add(Box.createRigidArea(new Dimension(0, 5)));
 
         JButton dfsButton = new JButton("Run DFS");
         dfsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -40,7 +37,7 @@ public class ControlPanel extends JPanel {
                 currentDfsWorker = graphPanel.startDfs();
 
                 if (currentDfsWorker != null) {
-                    currentDfsWorker.execute(); // Start the worker AFTER adding the listener
+                    currentDfsWorker.execute();
                 }
             }
         });
@@ -153,7 +150,7 @@ public class ControlPanel extends JPanel {
         });
         add(showWeightsCheckbox);
 
-        add(Box.createRigidArea(new Dimension(0, 5))); // Spacing
+        add(Box.createRigidArea(new Dimension(0, 5)));
         JButton newGraphButton = new JButton("Create Graph");
         newGraphButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         newGraphButton.addActionListener(e -> {
@@ -165,7 +162,7 @@ public class ControlPanel extends JPanel {
         add(newGraphButton);
 
 
-        add(Box.createRigidArea(new Dimension(0, 15))); // More Spacing before slider
+        add(Box.createRigidArea(new Dimension(0, 15)));
 
         ////////////////////////////////////Slider
         JSlider animationSpeedSlider = new JSlider(JSlider.HORIZONTAL, 50, 1000, 250); //min, max, init
@@ -211,7 +208,6 @@ public class ControlPanel extends JPanel {
                 }
             }
         });
-
         add(graphDensitySlider);
         add(Box.createRigidArea(new Dimension(0, 10)));
     }
