@@ -1,0 +1,1 @@
+The program is ran from main.
